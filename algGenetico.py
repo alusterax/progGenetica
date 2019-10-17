@@ -2,7 +2,6 @@ from no import No
 import random
 import math
 import sys
-import time
 import copy
 
 class Individuo:
