@@ -1,8 +1,17 @@
-from no import No
 import random
 import math
 import sys
 import copy
+
+class No:
+    valor = None
+    pai = None
+    direito = None
+    esquerdo = None
+
+    def __init__(self, valor, pai = None):
+        self.valor = valor
+        self.pai = pai
 
 class Individuo:
     raiz = None
@@ -10,6 +19,7 @@ class Individuo:
         self.raiz = raiz
         self._ordem_calculo = []
         self.resultado = 99999
+        self.pontos = []
 
     def altura(self, raiz = None):
         if raiz == None:
@@ -60,6 +70,8 @@ class Individuo:
             somatorio = 0
             for i in range(1, 11):
                 resultado_x = self._resultado_funcao(i)
+                if (len(self.pontos)<10):
+                    self.pontos.append(resultado_x)
                 resultado_pacial = y[i-1] - resultado_x
                 somatorio = (resultado_pacial * resultado_pacial) + somatorio
             resultado_comparacao = math.sqrt(somatorio)
@@ -73,15 +85,6 @@ class Individuo:
             formula = formula + ' ' + str(i)
         return formula
 
-class No:
-    valor = None
-    pai = None
-    direito = None
-    esquerdo = None
-
-    def __init__(self, valor, pai = None):
-        self.valor = valor
-        self.pai = pai
 
 class AlgoritmoGenetico:
 
@@ -216,39 +219,34 @@ class AlgoritmoGenetico:
         return populacao
 
     def tecnica_selecao_elitista(self, populacao_inicial:list):
-        tempo = 1
+        gen = 1
         populacao = populacao_inicial
         self.melhor_individuo = populacao[0]
+        melhores = []
 
-        while tempo < self.num_max_geracoes and self.melhor_individuo.resultado != 0:
+        while gen <= self.num_max_geracoes and self.melhor_individuo.resultado != 0:
             populacao = self.selecao_elitista(populacao)
             for i in populacao:
                 if self.melhor_individuo.resultado > i.resultado:
                     self.melhor_individuo = copy.deepcopy(i)
-                    print (f'Distancia: {round(self.melhor_individuo.resultado,3)} ({self.melhor_individuo.formula()}) Altura: {self.melhor_individuo.altura()}')
+            melhores.append(self.melhor_individuo)
+            print (f'Distancia: {round(self.melhor_individuo.resultado,3)} ({self.melhor_individuo.formula()}) Altura: {self.melhor_individuo.altura()}')
 
             populacao = self.mutacao(populacao)
             novos_individuos = self.recombinacao_populacao(populacao, self.percentual_recombinacao)
             populacao = populacao + novos_individuos
-            tempo = tempo + 1
+            gen = gen + 1
+        print ('--- Fim ---')
+        for geracao,individuo in enumerate(melhores):
+            print (f'Gen: {geracao+1} | Melhor: {individuo.resultado} ({individuo.formula()})')
+            print(f'Pontos: {individuo.pontos}')
 
-        #tela.show_estado("Finalizado")
-        print("Fim")
-        print("Relatório:")
-        print('Individuo:', str(self.melhor_individuo.resultado)+ ' - ('+self.melhor_individuo.formula()+')')
-        print('Geração atual: ', tempo)
-        print('Tamanho população inicial: ', self.tamanho_inicial_populacao)
-        print('Número máximo gerações: ', self.num_max_geracoes)
-        print('Porcentagem de recombinação: ', self.percentual_recombinacao)
-        # print('Porcentagem de mutação: ', self.percentual_mutacao)
-        #print('Limite populacional: ', self.limite_populacional)
-        print('Porcentagem de redução populacional: ', self.porcentagem_reducao_populacional)
 
 ag = AlgoritmoGenetico()
 
-ag.tamanho_inicial_populacao = 2000
-ag.altura_maxima = 5
-ag.num_max_geracoes = 100
+ag.tamanho_inicial_populacao = 5000
+ag.altura_maxima = 4
+ag.num_max_geracoes = 10
 ag.percentual_mutacao = 50
 ag.percentual_recombinacao = 100
 ag.porcentagem_reducao_populacional = 50
