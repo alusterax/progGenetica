@@ -1,6 +1,7 @@
 # progGenetica
 Algoritmo genético escrito em python.
 Foram executadas 5 gerações com 5000 indivíduos iniciais.
+O repositório contém um arquivo do jupyter notebook para melhor análise
 
 ![](images/run3.png)
 ![](images/run4.png)
